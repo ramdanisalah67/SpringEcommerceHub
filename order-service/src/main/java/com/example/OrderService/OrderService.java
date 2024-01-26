@@ -2,6 +2,7 @@ package com.example.OrderService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -14,8 +15,9 @@ public class OrderService {
 
 
     @Bean
-    public WebClient webClient(){
-        return WebClient.builder().build();
+    @LoadBalanced
+    public WebClient.Builder webClientBuilder(){
+        return WebClient.builder();
     }
 
 }

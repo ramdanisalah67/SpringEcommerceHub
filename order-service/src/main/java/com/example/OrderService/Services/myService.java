@@ -6,6 +6,7 @@ import com.example.OrderService.Repositories.OrderRepository;
 import com.example.OrderService.dto.InventoryResponse;
 import com.example.OrderService.dto.OrderLineItemsRequest;
 import com.example.OrderService.dto.OrderRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class myService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private WebClient webClient ;
+
+    private final WebClient.Builder webClientBuilder ;
     public void placeOrder(OrderRequest orderRequest){
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -39,7 +40,7 @@ public class myService {
         List<String> skuCodes = orderLineItems.stream().map(e->e.getSkuCode()).toList();
 
         //call inventory service and place order if product is in stock
-        InventoryResponse[] inventoryResponses  =  webClient.get().uri("http://localhost:8083/api/inventory/isInStock",
+        InventoryResponse[] inventoryResponses  =  webClientBuilder.build().get().uri("http://INVENTORY-SERVICE/api/inventory/isInStock",
                         uriBuilder -> uriBuilder.queryParam("skuCodes",skuCodes).build())
                             .retrieve()
                             .bodyToMono(InventoryResponse[].class)
